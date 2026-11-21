@@ -123,6 +123,7 @@ class SupabaseAuthRemoteDataSource @Inject constructor(
         client.auth.refreshCurrentSession()
     }
 
+    @OptIn(kotlin.time.ExperimentalTime::class)
     private fun UserInfo.toAuthUser(): AuthUser {
         val metaDisplayName = userMetadata
             ?.get("display_name")
