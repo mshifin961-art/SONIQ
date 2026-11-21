@@ -1,6 +1,6 @@
 [versions]
-# Verified mutually compatible stable toolchain (2026)
-# AGP 8.13.0 + Gradle 8.14.3 + JDK 17 + API 36 (Android 16)
+# Verified compatible foundation toolchain: AGP 8.13.0 + Gradle 8.14.3 + JDK 17 + API 36
+# Compose BOM 2026.07.00 stays on the pre-1.12 Compose line (Compose 1.12 requires API 37 + AGP 9.1.1).
 # Kotlin 2.2.21 + KSP 2.2.21-2.0.5 + Hilt 2.57.2
 agp = "8.13.0"
 kotlin = "2.2.21"
@@ -15,7 +15,7 @@ activityCompose = "1.10.1"
 coreSplashscreen = "1.0.1"
 
 # Jetpack Compose & Navigation
-composeBom = "2026.09.00"
+composeBom = "2026.07.00"
 navigationCompose = "2.9.7"
 
 # Coroutines & Serialization
