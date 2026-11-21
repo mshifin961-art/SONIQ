@@ -1,0 +1,9 @@
+# Copy this file to local.properties (which is gitignored) and fill in your local values.
+# NEVER commit real credentials to version control.
+
+# Android SDK location (auto-populated by Android Studio)
+# sdk.dir=/path/to/Android/Sdk
+
+# Supabase configuration (injected into BuildConfig at build time; leave blank until Phase 2)
+SUPABASE_URL=
+SUPABASE_ANON_KEY=

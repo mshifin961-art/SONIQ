@@ -1,0 +1,29 @@
+workflows:
+  soniq-android-ci:
+    name: SONIQ Android CI (Phase 1 Validation)
+    max_build_duration: 30
+    instance_type: linux_x2
+    environment:
+      java: 17
+      vars:
+        GRADLE_OPTS: "-Xmx2048m -Dorg.gradle.daemon=false"
+    scripts:
+      - name: Initialize Gradle Wrapper (if gradlew not yet generated)
+        script: |
+          if [ ! -f "./gradlew" ]; then
+            gradle wrapper --gradle-version 8.14.3
+          fi
+          chmod +x ./gradlew
+      - name: Run Unit Tests
+        script: |
+          ./gradlew :app:testDebugUnitTest --stacktrace
+      - name: Run Android Lint
+        script: |
+          ./gradlew :app:lintDebug --stacktrace
+      - name: Assemble Debug APK
+        script: |
+          ./gradlew :app:assembleDebug --stacktrace
+    artifacts:
+      - app/build/outputs/**/*.apk
+      - app/build/reports/tests/**/*
+      - app/build/reports/lint-results-debug.html

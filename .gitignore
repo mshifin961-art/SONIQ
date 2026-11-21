@@ -1,0 +1,18 @@
+# Gradle & build outputs
+.gradle/
+build/
+app/build/
+captures/
+.cxx/
+
+# Local environment & secrets (NEVER commit)
+local.properties
+*.jks
+*.keystore
+google-services.json
+
+# IDE files
+.idea/
+*.iml
+.DS_Store
+*.log
