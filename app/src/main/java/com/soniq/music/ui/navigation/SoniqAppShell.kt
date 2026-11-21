@@ -1,8 +1,8 @@
 package com.soniq.music.ui.navigation
 
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
@@ -32,6 +32,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.soniq.music.ui.components.SoniqAtmosphereBackground
 import com.soniq.music.ui.components.SoniqBottomBar
+import com.soniq.music.ui.feature.auth.AuthScreen
 import com.soniq.music.ui.feature.explore.ExploreScreen
 import com.soniq.music.ui.feature.home.HomeScreen
 import com.soniq.music.ui.feature.library.LibraryScreen
@@ -49,6 +50,7 @@ fun SoniqAppShell(
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
+    val isAuthRoute = backStackEntry?.destination?.hasRoute(SoniqDestination.Auth::class) == true
     val currentDestination = SoniqNavigationSpec.primaryDestinations
         .firstOrNull { item ->
             backStackEntry?.destination?.hasRoute(item.route::class) == true
@@ -63,33 +65,35 @@ fun SoniqAppShell(
 
                 if (useNavigationRail) {
                     Row(modifier = Modifier.fillMaxSize()) {
-                        NavigationRail(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .statusBarsPadding(),
-                            containerColor = SoniqColors.DeepNavy.copy(alpha = 0.85f),
-                            contentColor = SoniqColors.TextPrimary
-                        ) {
-                            SoniqNavigationSpec.primaryDestinations.forEach { item ->
-                                val selected = currentDestination == item.route
-                                NavigationRailItem(
-                                    selected = selected,
-                                    onClick = { navController.navigatePrimary(item.route) },
-                                    icon = {
-                                        Icon(
-                                            imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
-                                            contentDescription = item.label
+                        if (!isAuthRoute) {
+                            NavigationRail(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .statusBarsPadding(),
+                                containerColor = SoniqColors.DeepNavy.copy(alpha = 0.85f),
+                                contentColor = SoniqColors.TextPrimary
+                            ) {
+                                SoniqNavigationSpec.primaryDestinations.forEach { item ->
+                                    val selected = currentDestination == item.route
+                                    NavigationRailItem(
+                                        selected = selected,
+                                        onClick = { navController.navigatePrimary(item.route) },
+                                        icon = {
+                                            Icon(
+                                                imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
+                                                contentDescription = item.label
+                                            )
+                                        },
+                                        label = { Text(item.label) },
+                                        colors = NavigationRailItemDefaults.colors(
+                                            selectedIconColor = atmosphere.primaryAccent,
+                                            selectedTextColor = SoniqColors.TextPrimary,
+                                            indicatorColor = atmosphere.primaryAccent.copy(alpha = 0.22f),
+                                            unselectedIconColor = SoniqColors.TextMuted,
+                                            unselectedTextColor = SoniqColors.TextMuted
                                         )
-                                    },
-                                    label = { Text(item.label) },
-                                    colors = NavigationRailItemDefaults.colors(
-                                        selectedIconColor = atmosphere.primaryAccent,
-                                        selectedTextColor = SoniqColors.TextPrimary,
-                                        indicatorColor = atmosphere.primaryAccent.copy(alpha = 0.22f),
-                                        unselectedIconColor = SoniqColors.TextMuted,
-                                        unselectedTextColor = SoniqColors.TextMuted
                                     )
-                                )
+                                }
                             }
                         }
 
@@ -104,13 +108,15 @@ fun SoniqAppShell(
                     Scaffold(
                         containerColor = Color.Transparent,
                         bottomBar = {
-                            SoniqBottomBar(
-                                destinations = SoniqNavigationSpec.primaryDestinations,
-                                currentDestination = currentDestination,
-                                onNavigate = { destination ->
-                                    navController.navigatePrimary(destination)
-                                }
-                            )
+                            if (!isAuthRoute) {
+                                SoniqBottomBar(
+                                    destinations = SoniqNavigationSpec.primaryDestinations,
+                                    currentDestination = currentDestination,
+                                    onNavigate = { destination ->
+                                        navController.navigatePrimary(destination)
+                                    }
+                                )
+                            }
                         }
                     ) { innerPadding ->
                         SoniqNavHost(
@@ -132,6 +138,7 @@ private fun SoniqNavHost(
     modifier: Modifier = Modifier
 ) {
     val activeAccent by viewModel.activeAccent.collectAsStateWithLifecycle()
+    val sessionState by viewModel.sessionState.collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
@@ -142,8 +149,10 @@ private fun SoniqNavHost(
     ) {
         composable<SoniqDestination.Home> {
             HomeScreen(
+                sessionState = sessionState,
                 onOpenExplore = { navController.navigatePrimary(SoniqDestination.Explore) },
-                onOpenLibrary = { navController.navigatePrimary(SoniqDestination.Library) }
+                onOpenLibrary = { navController.navigatePrimary(SoniqDestination.Library) },
+                onOpenAuth = { navController.navigate(SoniqDestination.Auth) { launchSingleTop = true } }
             )
         }
         composable<SoniqDestination.Explore> {
@@ -159,8 +168,19 @@ private fun SoniqNavHost(
             ProfileScreen(
                 activeAccent = activeAccent,
                 onSelectAccent = viewModel::selectAccent,
+                onOpenAuth = { navController.navigate(SoniqDestination.Auth) { launchSingleTop = true } },
                 appConfig = viewModel.appConfig,
                 supabaseStatus = viewModel.supabaseStatus
+            )
+        }
+        composable<SoniqDestination.Auth> {
+            AuthScreen(
+                onAuthenticated = {
+                    navController.popBackStack()
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
             )
         }
     }

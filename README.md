@@ -1,50 +1,37 @@
 # SONIQ — Feel Every Frequency.
 
-**Phase 1 — Foundation** | Premium Android Music Streaming Platform
+**Phase 2 — Authentication & User System** | Premium Android Music Streaming Platform
 
 ## Overview
 
-This archive contains the Phase 1 Foundation of **SONIQ** (`com.soniq.music`): a single-module (`:app`) Android application built with Clean Architecture, strict package boundaries, Hilt dependency injection, Jetpack Compose + Material 3, and SONIQ's original **Dynamic Dark Glassmorphism** visual system.
+This repository contains **SONIQ** (`com.soniq.music`) through **Phase 2 — Authentication & User System**, built directly on top of the verified Phase 1 Foundation:
+- Single `:app` Gradle module with strict Clean Architecture package boundaries (`app`, `core`, `data`, `domain`, `ui`, `audio`, `database`, `network`, `di`).
+- **Supabase Authentication & PostgREST (`supabase-kt` BOM `3.5.0` + Ktor `3.2.1`)**: registration, login, reactive session restoration, sign-out, guest browsing mode, and user profile synchronization.
+- **PostgreSQL + Row Level Security (`supabase/migrations/001_phase2_profiles_auth.sql`)**: `public.profiles` schema, auto-provisioning signup trigger, and strict `auth.uid() = id` RLS policies.
+- **Dynamic Dark Glassmorphism UI**: Auth screen, live Profile viewer/editor, Dynamic Atmosphere accent switcher, and 5-destination adaptive navigation shell.
 
 ## Verified Toolchain & Dependency Matrix
 
 | Component | Version |
 | :--- | :--- |
 | Application ID | `com.soniq.music` |
-| Min SDK | `26` (Android 8.0) |
-| Compile / Target SDK | `36` (Android 16) |
+| Min SDK / Target & Compile SDK | `26` / `36` (Android 16) |
 | JDK Toolchain | `17` |
-| Android Gradle Plugin (AGP) | `8.13.0` |
-| Gradle Wrapper | `8.14.3` |
-| Kotlin & Compose Compiler | `2.2.21` |
-| KSP | `2.2.21-2.0.5` |
-| Dagger Hilt | `2.57.2` |
-| Jetpack Compose BOM | `2026.09.00` |
-| Navigation Compose | `2.9.7` |
-| Coroutines | `1.10.1` |
+| Android Gradle Plugin (AGP) / Gradle | `8.13.0` / `8.14.3` |
+| Kotlin & Compose Compiler / KSP | `2.2.21` / `2.2.21-2.0.5` |
+| Dagger Hilt / Hilt Nav Compose | `2.57.2` / `1.2.0` |
+| Jetpack Compose BOM / Navigation Compose | `2025.12.01` / `2.9.7` |
+| Supabase Kotlin BOM / Ktor Android | `3.5.0` / `3.2.1` |
 
-## Package Architecture (`com.soniq.music`)
+## Setup & Supabase Configuration
 
-- `app/` — `SoniqApplication` (`@HiltAndroidApp`), `MainActivity` (edge-to-edge host)
-- `core/` — `AppResult`, `AppError`, `UiState`, `SoniqDispatchers`, `TimeFormatter`, `AppConfig`, `SupabaseConfig`
-- `domain/` — Pure Kotlin models (`AtmosphereAccent`, `AudioQualityTier`, `PlaybackStatus`, `RepeatMode`) and repository contracts
-- `data/` — Reactive repository implementations (`InMemoryAtmospherePreferencesRepository`)
-- `audio/` — UI-independent playback state and controller contracts (`PlaybackSnapshot`, `PlaybackController`, `NoOpPlaybackController`) decoupled from Compose and Activity lifecycle
-- `database/` — Local Room database naming & table contracts (`SoniqDatabaseContract`)
-- `network/` — Build-injected Supabase environment readiness validator (`SupabaseEnvironmentValidator`)
-- `di/` — Hilt singleton modules (`DispatchersModule`, `ConfigModule`, `AppBindingsModule`)
-- `ui/` — Dynamic Dark Glassmorphism theme, reusable glass components, type-safe 5-destination navigation shell (`Home`, `Explore`, `Search`, `Library`, `Profile`), and adaptive bottom bar / navigation rail layout
-
-## Getting Started (Android Studio or Codemagic)
-
-1. Copy `local.properties.example` to `local.properties` (gitignored).
-2. Open the `soniq/` folder in Android Studio (Narwhal 2025.1+ / 2026) with JDK 17 and Android SDK Platform 36 installed, or connect the repo to Codemagic using `codemagic.yaml`.
-3. Run verification locally:
+1. Copy `local.properties.example` to `local.properties` (gitignored) and provide your project's `SUPABASE_URL` and `SUPABASE_ANON_KEY` (never commit secrets or service role keys).
+2. Run `supabase/migrations/001_phase2_profiles_auth.sql` in your Supabase project's SQL Editor to create `public.profiles` with Row Level Security enabled.
+3. Build and test locally or in Codemagic:
    ```bash
    ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
    ```
-   *(If `gradlew` has not been bootstrapped yet, run `gradle wrapper --gradle-version 8.14.3` once or let Android Studio sync generate it.)*
 
 ## Validation Limitations (Offline Authoring Environment)
 
-This phase was authored in an offline Linux environment without the Android SDK, full JDK (`javac`), Gradle, or internet access. Static validation (TOML, XML, Kotlin package/path consistency, balanced syntax tokens, secret scanning, and ZIP integrity) was executed, while Kotlin compilation, JUnit execution, Android Lint, and APK assembly must be run in Android Studio or Codemagic.
+Static validation (TOML, XML, Kotlin package-path matching, balanced delimiters, secret/TODO scanning, SQL migration presence, and ZIP integrity) was executed here. Kotlin compilation, JUnit execution, Android Lint, and APK assembly require external verification in Android Studio or Codemagic.

@@ -35,8 +35,8 @@ android {
         applicationId = "com.soniq.music"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0-phase1"
+        versionCode = 2
+        versionName = "0.2.0-phase2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -48,7 +48,7 @@ android {
 
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKey\"")
-        buildConfigField("String", "SONIQ_PHASE", "\"Phase 1 — Foundation\"")
+        buildConfigField("String", "SONIQ_PHASE", "\"Phase 2 — Authentication & User System\"")
     }
 
     buildTypes {
@@ -123,6 +123,12 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+
+    // Supabase Backend & Ktor Client (Phase 2)
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.auth)
+    implementation(libs.supabase.postgrest)
+    implementation(libs.ktor.client.android)
 
     // Unit Tests
     testImplementation(libs.junit)

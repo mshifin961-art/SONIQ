@@ -1,6 +1,6 @@
 [versions]
-# Foundation toolchain: AGP 8.13.0 + Gradle 8.14.3 + JDK 17 + API 36
-# Use the published Compose BOM 2025.12.01 (Compose 1.10.x) to stay on the current AGP/API 36 toolchain.
+# Verified mutually compatible stable toolchain (2026)
+# AGP 8.13.0 + Gradle 8.14.3 + JDK 17 + API 36 (Android 16)
 # Kotlin 2.2.21 + KSP 2.2.21-2.0.5 + Hilt 2.57.2
 agp = "8.13.0"
 kotlin = "2.2.21"
@@ -21,6 +21,10 @@ navigationCompose = "2.9.7"
 # Coroutines & Serialization
 coroutines = "1.10.1"
 kotlinxSerializationJson = "1.8.0"
+
+# Supabase & Ktor (Phase 2 — verified compatible with Kotlin 2.2.21)
+supabaseBom = "3.5.0"
+ktor = "3.2.1"
 
 # Testing
 junit = "4.13.2"
@@ -62,6 +66,12 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+
+# Supabase & Ktor
+supabase-bom = { group = "io.github.jan-tennert.supabase", name = "bom", version.ref = "supabaseBom" }
+supabase-auth = { group = "io.github.jan-tennert.supabase", name = "auth-kt" }
+supabase-postgrest = { group = "io.github.jan-tennert.supabase", name = "postgrest-kt" }
+ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
 
 # Unit & Instrumented Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }

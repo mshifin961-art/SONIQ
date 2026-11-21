@@ -2,8 +2,16 @@ package com.soniq.music.di
 
 import com.soniq.music.audio.NoOpPlaybackController
 import com.soniq.music.audio.PlaybackController
+import com.soniq.music.data.auth.AuthRemoteDataSource
+import com.soniq.music.data.auth.SupabaseAuthRemoteDataSource
+import com.soniq.music.data.auth.SupabaseAuthRepository
 import com.soniq.music.data.preferences.InMemoryAtmospherePreferencesRepository
+import com.soniq.music.data.profile.ProfileRemoteDataSource
+import com.soniq.music.data.profile.SupabaseProfileRemoteDataSource
+import com.soniq.music.data.profile.SupabaseProfileRepository
 import com.soniq.music.domain.repository.AtmospherePreferencesRepository
+import com.soniq.music.domain.repository.AuthRepository
+import com.soniq.music.domain.repository.ProfileRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -25,4 +33,28 @@ abstract class AppBindingsModule {
     abstract fun bindPlaybackController(
         impl: NoOpPlaybackController
     ): PlaybackController
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRemoteDataSource(
+        impl: SupabaseAuthRemoteDataSource
+    ): AuthRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        impl: SupabaseAuthRepository
+    ): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindProfileRemoteDataSource(
+        impl: SupabaseProfileRemoteDataSource
+    ): ProfileRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindProfileRepository(
+        impl: SupabaseProfileRepository
+    ): ProfileRepository
 }

@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.soniq.music.core.common.TimeFormatter
+import com.soniq.music.domain.model.AuthSessionState
 import com.soniq.music.ui.components.SoniqBrandMark
 import com.soniq.music.ui.components.SoniqEmptyState
 import com.soniq.music.ui.components.SoniqGlassCard
@@ -34,16 +35,32 @@ import java.util.Calendar
 
 @Composable
 fun HomeScreen(
+    sessionState: AuthSessionState,
     onOpenExplore: () -> Unit,
     onOpenLibrary: () -> Unit,
+    onOpenAuth: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSoniqSpacing.current
     val atmosphere = LocalDynamicAtmosphere.current
-    val greeting = remember {
+    val baseGreeting = remember {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
         TimeFormatter.greetingForHour(hour)
     }
+    val greeting = when (sessionState) {
+        is AuthSessionState.Authenticated -> {
+            val firstName = sessionState.user.displayName
+                ?.trim()
+                ?.substringBefore(" ")
+                ?.takeIf { it.isNotEmpty() }
+            if (firstName != null) "$baseGreeting, $firstName" else baseGreeting
+        }
+        else -> baseGreeting
+    }
+
+    val showSignInAction = sessionState is AuthSessionState.Unauthenticated ||
+        sessionState is AuthSessionState.Guest ||
+        sessionState is AuthSessionState.Unconfigured
 
     LazyColumn(
         modifier = modifier
@@ -59,7 +76,20 @@ fun HomeScreen(
     ) {
         item {
             Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
-                SoniqBrandMark(showTagline = true)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SoniqBrandMark(showTagline = true)
+                    if (showSignInAction) {
+                        SoniqPillChip(
+                            label = "Sign In",
+                            selected = false,
+                            onClick = onOpenAuth
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(spacing.xs))
                 Text(
                     text = greeting,

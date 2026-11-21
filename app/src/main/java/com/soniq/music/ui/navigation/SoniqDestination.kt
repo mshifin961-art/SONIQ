@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 
 /**
- * Type-safe top-level navigation destinations for SONIQ.
+ * Type-safe navigation destinations for SONIQ.
  */
 @Serializable
 sealed interface SoniqDestination {
@@ -33,6 +33,9 @@ sealed interface SoniqDestination {
 
     @Serializable
     data object Profile : SoniqDestination
+
+    @Serializable
+    data object Auth : SoniqDestination
 }
 
 data class PrimaryDestinationItem(
