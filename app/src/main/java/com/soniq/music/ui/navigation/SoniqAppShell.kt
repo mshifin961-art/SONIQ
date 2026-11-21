@@ -33,6 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import com.soniq.music.ui.components.SoniqAtmosphereBackground
 import com.soniq.music.ui.components.SoniqBottomBar
 import com.soniq.music.ui.feature.auth.AuthScreen
+import com.soniq.music.ui.feature.catalogue.CatalogueViewModel
 import com.soniq.music.ui.feature.explore.ExploreScreen
 import com.soniq.music.ui.feature.home.HomeScreen
 import com.soniq.music.ui.feature.library.LibraryScreen
@@ -44,7 +45,8 @@ import com.soniq.music.ui.theme.SoniqTheme
 
 @Composable
 fun SoniqAppShell(
-    viewModel: SoniqShellViewModel = hiltViewModel()
+    viewModel: SoniqShellViewModel = hiltViewModel(),
+    catalogueViewModel: CatalogueViewModel = hiltViewModel()
 ) {
     val activeAccent by viewModel.activeAccent.collectAsStateWithLifecycle()
     val navController = rememberNavController()
@@ -100,7 +102,8 @@ fun SoniqAppShell(
                         Box(modifier = Modifier.weight(1f)) {
                             SoniqNavHost(
                                 navController = navController,
-                                viewModel = viewModel
+                                viewModel = viewModel,
+                                catalogueViewModel = catalogueViewModel
                             )
                         }
                     }
@@ -122,6 +125,7 @@ fun SoniqAppShell(
                         SoniqNavHost(
                             navController = navController,
                             viewModel = viewModel,
+                            catalogueViewModel = catalogueViewModel,
                             modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
                         )
                     }
@@ -135,10 +139,17 @@ fun SoniqAppShell(
 private fun SoniqNavHost(
     navController: NavHostController,
     viewModel: SoniqShellViewModel,
+    catalogueViewModel: CatalogueViewModel,
     modifier: Modifier = Modifier
 ) {
     val activeAccent by viewModel.activeAccent.collectAsStateWithLifecycle()
     val sessionState by viewModel.sessionState.collectAsStateWithLifecycle()
+    val starterTracks by catalogueViewModel.starterTracks.collectAsStateWithLifecycle()
+    val allTracks by catalogueViewModel.allTracks.collectAsStateWithLifecycle()
+    val artists by catalogueViewModel.artists.collectAsStateWithLifecycle()
+    val albums by catalogueViewModel.albums.collectAsStateWithLifecycle()
+    val genres by catalogueViewModel.genres.collectAsStateWithLifecycle()
+    val isLoadingCatalogue by catalogueViewModel.isLoadingStarter.collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
@@ -150,19 +161,26 @@ private fun SoniqNavHost(
         composable<SoniqDestination.Home> {
             HomeScreen(
                 sessionState = sessionState,
+                starterTracks = starterTracks,
+                isLoadingCatalogue = isLoadingCatalogue,
                 onOpenExplore = { navController.navigatePrimary(SoniqDestination.Explore) },
                 onOpenLibrary = { navController.navigatePrimary(SoniqDestination.Library) },
                 onOpenAuth = { navController.navigate(SoniqDestination.Auth) { launchSingleTop = true } }
             )
         }
         composable<SoniqDestination.Explore> {
-            ExploreScreen()
+            ExploreScreen(
+                genres = genres,
+                albums = albums,
+                artists = artists,
+                tracks = allTracks
+            )
         }
         composable<SoniqDestination.Search> {
             SearchScreen()
         }
         composable<SoniqDestination.Library> {
-            LibraryScreen()
+            LibraryScreen(starterTracks = starterTracks)
         }
         composable<SoniqDestination.Profile> {
             ProfileScreen(

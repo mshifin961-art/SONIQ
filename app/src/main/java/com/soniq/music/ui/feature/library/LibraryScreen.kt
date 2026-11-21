@@ -18,8 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.soniq.music.domain.model.Track
 import com.soniq.music.ui.components.SoniqEmptyState
 import com.soniq.music.ui.components.SoniqPillChip
+import com.soniq.music.ui.components.SoniqTrackRow
 import com.soniq.music.ui.theme.LocalSoniqSpacing
 import com.soniq.music.ui.theme.SoniqColors
 
@@ -34,6 +36,7 @@ private val LibraryCollections = listOf(
 
 @Composable
 fun LibraryScreen(
+    starterTracks: List<Track>,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSoniqSpacing.current
@@ -59,7 +62,7 @@ fun LibraryScreen(
                     color = SoniqColors.TextPrimary
                 )
                 Text(
-                    text = "Your saved collections, playlists, and offline starter tracks.",
+                    text = "Your licensed Starter Collection, saved music, and playlists.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = SoniqColors.TextSecondary
                 )
@@ -78,13 +81,30 @@ fun LibraryScreen(
             }
         }
 
-        item {
-            SoniqEmptyState(
-                icon = Icons.Rounded.LibraryMusic,
-                badgeLabel = selectedCollection,
-                title = "$selectedCollection is ready",
-                subtitle = "Local Room storage and Supabase synchronization for $selectedCollection will be activated in upcoming phases."
-            )
+        if (selectedCollection == "Starter Collection") {
+            if (starterTracks.isEmpty()) {
+                item {
+                    SoniqEmptyState(
+                        icon = Icons.Rounded.LibraryMusic,
+                        badgeLabel = "Starter Collection",
+                        title = "Starter Collection is empty",
+                        subtitle = "Ensure assets/music/licenses.json is bundled with the application."
+                    )
+                }
+            } else {
+                items(starterTracks, key = { it.id }) { track ->
+                    SoniqTrackRow(track = track)
+                }
+            }
+        } else {
+            item {
+                SoniqEmptyState(
+                    icon = Icons.Rounded.LibraryMusic,
+                    badgeLabel = selectedCollection,
+                    title = "$selectedCollection is ready",
+                    subtitle = "Personal favorites, playlists, and listening history synchronization activate in Phase 7."
+                )
+            }
         }
     }
 }

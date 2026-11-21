@@ -1,14 +1,14 @@
 package com.soniq.music.database
 
 /**
- * Local persistence contract defining database identity and planned Room table names.
- * Room entities, DAOs, and migrations are implemented in Phase 3.
+ * Local Room persistence contract defining database identity and table names.
  */
 object SoniqDatabaseContract {
     const val DATABASE_NAME = "soniq_music.db"
     const val INITIAL_SCHEMA_VERSION = 1
 
     object Tables {
+        const val GENRES = "genres"
         const val TRACKS = "tracks"
         const val ALBUMS = "albums"
         const val ARTISTS = "artists"
