@@ -9,7 +9,7 @@ import com.soniq.music.core.common.AppResult
  */
 object AuthInputValidator {
 
-    private val emailRegex = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+    private val emailRegex = Regex("""^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$""")
     private val usernameRegex = Regex("^[a-zA-Z0-9._]{3,24}$")
 
     const val MIN_PASSWORD_LENGTH = 8
